@@ -1,8 +1,7 @@
-export interface ProjectRequest {
+export interface FolderRequest {
     id?: number;
     method: string;
-    idUserFolder?: number;
+    color?: string;
     type?: string;
-
     name?: string;
 }
