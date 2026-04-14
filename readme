@@ -1,0 +1,329 @@
+1 install nginx
+    sudo apt update
+    sudo apt install nginx
+
+2 install php 7.3.33
+    sudo apt install lsb-release ca-certificates apt-transport-https software-properties-common -y
+    sudo add-apt-repository ppa:ondrej/php
+    sudo apt update && sudo apt install php7.3
+    sudo apt install php7.3-cli php7.3-fpm php7.3-json php7.3-pdo php7.3-mysql php7.3-zip php7.3-gd  php7.3-mbstring php7.3-curl php7.3-xml php7.3-bcmath php7.3-json
+    cd /etc/php/7.3/fpm
+    nano php.ini
+        max_execution_time = 300
+        upload_max_filesize = 100M
+        post_max_size = 100M
+    sudo systemctl restart php7.3-fpm
+    sudo systemctl restart nginx
+
+3 settings nginx/php
+    mkdir /var/www/csdeep
+    mkdir /var/www/csdepp/logs
+    chmod -R 777 /var/www/csdeep
+    sudo apt install software-properties-common
+    sudo add-apt-repository ppa:certbot/certbot
+    sudo apt install certbot
+    #sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout cert.key -out cert.crt
+    sudo certbot certonly --nginx -w /var/www/csdeep/rur/public -d csdeep.store -d csdeep.store
+    nano /etc/php/7.3/fpm/pool.d/www.conf
+        listen = 127.0.0.1:9075
+        listen.owner = www-data
+        listen.group = www-data
+        listen.mode = 0660
+    nano /etc/nginx/sites-enabled/csdeep
+        server {
+            listen 80 default_server;
+            listen [::]:80 default_server;
+            listen 443 ssl default_server;
+            listen [::]:443 ssl default_server;
+            server_name  localhost;
+            root /var/www/csdeep/rur/public/;
+
+            add_header 'Content-Security-Policy' 'upgrade-insecure-requests';
+
+            ssl_certificate /etc/letsencrypt/live/csdeep.store/fullchain.pem;
+            ssl_certificate_key /etc/letsencrypt/live/csdeep.store/privkey.pem;
+            ssl_trusted_certificate /etc/letsencrypt/live/csdeep.store/chain.pem;
+
+            add_header X-Frame-Options "SAMEORIGIN";
+            add_header X-Content-Type-Options "nosniff";
+
+            proxy_connect_timeout       300;
+            proxy_send_timeout          300;
+            proxy_read_timeout          300;
+            send_timeout                300;
+
+            index index.php;
+
+            charset utf-8;
+
+            location / {
+                try_files $uri $uri/ /index.php?$query_string;
+            }
+
+            location = /favicon.ico { access_log off; log_not_found off; }
+            location = /robots.txt  { access_log off; log_not_found off; }
+
+            access_log /Users/emelnikov/Documents/csdeep/access.log;
+            error_log /Users/emelnikov/Documents/csdeep/error.log;
+            error_page 404 /index.php;
+
+            location ~ \.php$ {
+                fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+                fastcgi_split_path_info ^(.+\.php)(/.+)$;
+                fastcgi_pass 127.0.0.1:9075;
+                fastcgi_index index.php;
+                fastcgi_read_timeout 300s;
+                include fastcgi_params;
+            }
+
+            location /socket.io/ {
+                proxy_pass https://127.0.0.1:8443;
+                proxy_redirect off;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-NginX-Proxy true;
+                proxy_pass_request_headers on;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection 'upgrade';
+                proxy_set_header Host $host;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_cache_bypass $http_upgrade;
+            }
+        }
+        server {
+            listen 443 ssl ;
+            listen [::]:443 ssl ;
+            server_name csdeep.store; # managed by Certbot
+            root       /var/www/csdeep/rur/public/;
+
+            add_header X-Frame-Options "SAMEORIGIN";
+            add_header X-Content-Type-Options "nosniff";
+
+            add_header 'Content-Security-Policy' 'upgrade-insecure-requests';
+
+            #ssl_certificate /var/www/csdeep/rur/server/cert.crt;
+            #ssl_certificate_key /var/www/csdeep/rur/server/cert.key;
+            ssl_certificate /etc/letsencrypt/live/csdeep.store/fullchain.pem; # managed by Certbot
+            ssl_certificate_key /etc/letsencrypt/live/csdeep.store/privkey.pem; # managed by Certbot
+
+            index index.php;
+
+            proxy_connect_timeout       300;
+            proxy_send_timeout          300;
+            proxy_read_timeout          300;
+            send_timeout                300;
+
+            charset utf-8;
+
+            location / {
+                try_files $uri $uri/ /index.php?$query_string;
+            }
+
+            location = /favicon.ico { access_log off; log_not_found off; }
+            location = /robots.txt  { access_log off; log_not_found off; }
+
+            access_log /var/www/csdeep/logs/access.log;
+            error_log /var/www/csdeep/logs/error.log;
+            error_page 404 /index.php;
+
+            location ~ \.php$ {
+                fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+                fastcgi_split_path_info ^(.+\.php)(/.+)$;
+                fastcgi_pass 127.0.0.1:9075;
+                fastcgi_index index.php;
+                fastcgi_read_timeout 300s;
+                include fastcgi_params;
+            }
+
+            location /socket.io/ {
+                proxy_pass https://127.0.0.1:8443;
+                proxy_redirect off;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-NginX-Proxy true;
+                proxy_pass_request_headers on;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection 'upgrade';
+                proxy_set_header Host $host;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_cache_bypass $http_upgrade;
+            }
+        }
+        server {
+            if ($host = csdeep.store) {
+                return 301 https://$host$request_uri;
+            } # managed by Certbot
+
+
+            listen 80 ;
+            listen [::]:80 ;
+            server_name csdeep.store;
+            return 404; # managed by Certbot
+        }
+
+    sudo nginx -t
+    sudo systemctl restart nginx
+    sudo systemctl restart php7.3-fpm
+
+4 install mysql
+    sudo apt install mysql-server mysql-client
+    sudo mysql_secure_installation
+    sudo mysql -u root -p
+        create database csdeep;
+        create user 'csdeep'@'localhost' identified by 'Mery1029384756*';
+        GRANT ALL ON csdeep.* To 'csdeep'@'localhost' WITH GRANT OPTION;
+        FLUSH PRIVILEGES;
+        ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'Mery1029384756*';
+
+        create user 'csdeep_remote'@'%' identified by 'Mery1029384756*';
+        GRANT ALL ON csdeep.* To 'csdeep_remote'@'%' WITH GRANT OPTION;
+        FLUSH PRIVILEGES;
+        ALTER USER 'csdeep_remote'@'localhost' IDENTIFIED WITH mysql_native_password BY 'Mery1029384756*';
+    sudo systemctl restart mysql
+
+    list locks:
+        select * from performance_schema.processlist;
+
+5 install nodejs/npm
+    cd /home/ubuntu
+    wget https://nodejs.org/dist/v18.12.1/node-v18.12.1-linux-x64.tar.xz
+    tar xvfJ node-v18.12.1-linux-x64.tar.xz
+    sudo cp -r node-v18.12.1-linux-x64/{bin,include,lib,share} /usr/
+    find /usr -name node
+    cd rur/server
+    npm i -g forever
+
+6 install composer
+    cd /home/ubuntu
+    curl -sS https://getcomposer.org/installer -o composer-setup.php
+    php composer-setup.php
+    php composer.phar
+    curl -sS https://getcomposer.org/installer -o composer-setup.php
+    sudo php composer-setup.php --install-dir=/usr/local/bin --filename=composer
+    composer
+
+7 install redis
+    sudo apt -y install redis-server
+    sudo add-apt-repository ppa:redislabs/redis
+    sudo apt-get update
+    sudo apt-get install redis
+    sudo systemctl enable --now redis-server
+    sudo systemctl restart redis-server
+
+8 install php-redis
+    sudo apt-get install php7.3-redis
+    sudo nginx -t
+    sudo systemctl restart nginx
+    sudo systemctl restart php7.3-fpm
+
+9 copy src
+    tar -czvf n8n.tgz n8m-admin
+    scp n8n.tgz root@89.111.169.33:/var/www/n8n.tgz
+        kLcpPxXyaDQ8d61m
+    cd /var/www/n8n
+    tar -xvf n8n.tgz
+
+10 run
+    php artisan config:clear && php artisan migrate
+    chmod 777 /root
+    export NODE_OPTIONS=--openssl-legacy-provider
+    php artisan cache:clear
+    php artisan config:clear
+    php artisan config:cache
+    php artisan view:clear
+    php artisan view:cache
+    php artisan route:clear
+    php artisan route:cache
+    npm install
+    npm run watch
+    cd /server
+    local
+        node app.js https://localhost:444 8443 cert.crt cert.key cert.crt
+    remote
+        forever start app.js https://klyvex.ai 8443 /etc/letsencrypt/live/klyvex.ai/fullchain.pem /etc/letsencrypt/live/klyvex.ai/privkey.pem /etc/letsencrypt/live/klyvex.ai/fullchain.pem
+
+11 create indexes
+    create index idx_items_name on items(name);
+    create index idx_items_price on items(price);
+
+    create index idx_user_items_is_withdraw on user_items(is_withdraw);
+    create index idx_user_promocodes_status on user_promocodes(status);
+    create index idx_user_bets_status on user_bets(status);
+    create index idx_user_bets_bet on user_bets(bet);
+    create index idx_user_bets_win on user_bets(win);
+    create index idx_users_is_fake on users(is_fake);
+    create index idx_users_active on users(active);
+    create index idx_user_bets_updated_at on user_bets(updated_at);
+
+    create index idx_promocodes_activates on promocodes(activates);
+    create index idx_promocodes_type on promocodes(type);
+    create index idx_promocodes_active on promocodes(active);
+
+    create index idx_operations_out on operations(`out`);
+    create index idx_operations_type on operations(type);
+    create index idx_operations_sum on operations(sum);
+    create index idx_operations_status on operations(status);
+
+    create index idx_games_bank on games(bank);
+    create index idx_games_win on games(win);
+    create index idx_games_profit on games(profit);
+    create index idx_games_status on games(status);
+    create index idx_games_type on games(type);
+
+    create index idx_game_cases_active on game_cases(active);
+    create index idx_game_case_groups_active on game_case_groups(active);
+
+12 clear redis
+    redis-cli flushall
+
+13 error start nginx
+    sudo service apache2 stop
+
+14 settings deploy remote script
+    chmod 777 deploy.sh
+    ./deploy.sh
+
+15 telegram bot (https://telegram-bot-sdk.com/docs/getting-started/initialize)
+    composer remove irazasyed/telegram-bot-sdk
+    php artisan config:cache
+    composer require irazasyed/telegram-bot-sdk
+    https://api.telegram.org/bot7978891707:AAGUSUvMhbfgQJEglSP5lKfKC1yM17lYjUw/setwebhook?url=https://csdeep.store/api/telegram-bot/webhook
+
+16 clear db
+    delete from games
+    delete from bets
+    delete from lottery_users
+    delete from lotteries
+    delete from inventories
+    delete from notifications
+    delete from payments
+    delete from promocode_uses
+    delete from promocodes
+    delete from stocks
+    delete from tickets
+    delete from withdraws
+    delete from all_items
+
+17 cron for update prices
+    crontab -e
+        MAILTO=""
+        * * * * * cd /var/www/csdeep/rur && php artisan schedule:run >> /dev/null 2>&1
+
+18 csdeep_market server
+    ssh root@89.111.152.157
+        NJVf1DVdtXfwiCx9
+
+    tar -czvf front.tgz dist
+    scp front.tgz root@212.8.226.64:/var/www/
+        &L1uyHdhljqV
+    cd /var/www/
+    tar -xvf front.tgz
+
+    scp app.js root@212.8.226.64:/var/www/server 
+
+19 storage php laravel
+    php artisan storage:link
+
+20 google oath2
+    client_id: 420790984156-v8tud6r46hr8gbevmb9qm6tjsp6svoam.apps.googleusercontent.com
+    client_secret: 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
