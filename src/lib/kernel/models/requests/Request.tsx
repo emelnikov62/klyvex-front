@@ -3,6 +3,7 @@ import {AiRequest} from "@/lib/kernel/models/requests/ai/AiRequest.tsx";
 import {UserRequest} from "@/lib/kernel/models/requests/UserRequest.tsx";
 import {ProjectRequest} from "@/lib/kernel/models/requests/project/ProjectRequest.tsx";
 import {FolderRequest} from "@/lib/kernel/models/requests/folder/FolderRequest.tsx";
+import {PayRequest} from "@/lib/kernel/models/requests/pay/PayRequest.tsx";
 
 export interface Request {
     id?: string;
@@ -14,5 +15,6 @@ export interface Request {
     user?: UserRequest;
     project?: ProjectRequest;
     folder?: FolderRequest;
+    pay?: PayRequest;
 
 }

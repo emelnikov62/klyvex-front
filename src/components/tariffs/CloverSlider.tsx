@@ -12,7 +12,11 @@ const STEPS = [
 
 const LABELS = ["100", "300", "500", "1К", "3К", "5К"];
 
-const CloverSlider = () => {
+interface CloverSliderProps {
+  onTopUp?: (amount: number, total: number) => void;
+}
+
+const CloverSlider = ({ onTopUp }: CloverSliderProps) => {
   const [stepIndex, setStepIndex] = useState(2); // default 500
   const [animateDiscount, setAnimateDiscount] = useState(false);
   const prevIndex = useRef(stepIndex);
@@ -116,7 +120,10 @@ const CloverSlider = () => {
         </div>
 
         {/* CTA */}
-        <button className="w-full h-11 rounded-xl bg-primary text-primary-foreground font-semibold text-sm glow-lime hover:bg-primary/90 transition-all">
+        <button
+          onClick={() => onTopUp?.(current.amount, current.total)}
+          className="w-full h-11 rounded-xl bg-primary text-primary-foreground font-semibold text-sm glow-lime hover:bg-primary/90 transition-all"
+        >
           Пополнить за {current.total.toLocaleString("ru-RU")} ₽
         </button>
       </div>

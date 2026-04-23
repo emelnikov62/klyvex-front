@@ -3,6 +3,7 @@ import {AiModel} from "../main/AiModel";
 import {Error} from "../main/Error";
 import {Request} from "../main/Request";
 import {ChatFolder, ChatSession} from "@/hooks/use-panel-state";
+import {PayResponse} from "@/lib/kernel/models/responses/PayResponse.tsx";
 
 export interface Response {
     key: string;
@@ -21,6 +22,8 @@ export interface Response {
 
     request?: Request,
     models?: AiModel[],
+
+    pay?: PayResponse,
 
     error?: Error
 }

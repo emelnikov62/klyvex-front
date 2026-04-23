@@ -16,6 +16,12 @@ const CONFIG = {
         MAIN: {
             AUTH: {name: 'auth'},
             REGISTER: {name: 'register'},
+            PAY: {
+                name: 'pay',
+                METHODS: {
+                    CREATE: {name: 'create'}
+                }
+            },
             FOLDER: {
                 name: 'folder',
                 METHODS: {

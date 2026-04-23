@@ -31,6 +31,12 @@ const AppHeader = ({ onAssistantToggle }: { onAssistantToggle?: () => void }) =>
     setBalanceOpen(false);
   }, []);
 
+  const handleTopUp = useCallback((amount: number, total: number) => {
+    // TODO: integrate with payment API
+    console.log(`Top up: ${amount} clovers for ${total} ₽`);
+    setTopUpOpen(false);
+  }, []);
+
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) setDropdownOpen(false);
@@ -211,7 +217,7 @@ const AppHeader = ({ onAssistantToggle }: { onAssistantToggle?: () => void }) =>
           </div>
         )}
 
-        <TopUpModal open={topUpOpen} onClose={() => setTopUpOpen(false)} />
+        <TopUpModal open={topUpOpen} onClose={() => setTopUpOpen(false)} onTopUp={handleTopUp} />
       </>
     );
   }
@@ -316,7 +322,7 @@ const AppHeader = ({ onAssistantToggle }: { onAssistantToggle?: () => void }) =>
           </div>
         </div>
       </header>
-      <TopUpModal open={topUpOpen} onClose={() => setTopUpOpen(false)} />
+      <TopUpModal open={topUpOpen} onClose={() => setTopUpOpen(false)} onTopUp={handleTopUp} />
     </>
   );
 };

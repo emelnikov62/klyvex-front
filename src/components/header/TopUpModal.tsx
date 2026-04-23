@@ -15,9 +15,10 @@ const LABELS = ["100", "300", "500", "1К", "3К", "5К"];
 interface TopUpModalProps {
   open: boolean;
   onClose: () => void;
+  onTopUp?: (amount: number, total: number) => void;
 }
 
-const TopUpModal = ({ open, onClose }: TopUpModalProps) => {
+const TopUpModal = ({ open, onClose, onTopUp }: TopUpModalProps) => {
   const [stepIndex, setStepIndex] = useState(2);
   const [animateDiscount, setAnimateDiscount] = useState(false);
   const prevIndex = useRef(stepIndex);
@@ -137,7 +138,10 @@ const TopUpModal = ({ open, onClose }: TopUpModalProps) => {
         </div>
 
         {/* CTA */}
-        <button className="w-full h-11 rounded-xl bg-primary text-primary-foreground font-semibold text-sm glow-lime hover:bg-primary/90 transition-all">
+        <button
+          onClick={() => onTopUp?.(current.amount, current.total)}
+          className="w-full h-11 rounded-xl bg-primary text-primary-foreground font-semibold text-sm glow-lime hover:bg-primary/90 transition-all"
+        >
           Пополнить за {current.total.toLocaleString("ru-RU")} ₽
         </button>
       </div>

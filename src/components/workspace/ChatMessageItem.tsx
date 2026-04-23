@@ -8,7 +8,7 @@ import {toast} from "@/hooks/use-toast";
 import {useAuth} from "@/contexts/AuthContext";
 import {AiModel} from "@/lib/kernel/models/main/AiModel";
 import {getModelIcon} from "@/lib/models";
-import {useCallback, useEffect, useRef, useState} from "react";
+import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -45,7 +45,7 @@ const ChatMessageItem = ({message, onDelete, onRegenerate, regenerateAttachments
     // Get image attachments
     const imageAttachments = message.attachments?.filter(a => a.isImage) || [];
     const videoAttachments = message.attachments?.filter(a => a.isVideo) || [];
-    const audioAttachments = message.attachments?.filter(a => a.isAudio) || [];
+    const audioAttachments = useMemo(() => message.attachments?.filter(a => a.isAudio) || [], [message.attachments]);
     const isMidjourney = model?.key.toLowerCase() === "midjourney" && imageAttachments.length === 4;
     const [isVideoPlaying, setIsVideoPlaying] = useState(false);
     const videoRef = useRef<HTMLVideoElement>(null);

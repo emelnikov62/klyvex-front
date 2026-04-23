@@ -6,6 +6,7 @@ import {fileToBase64} from "@/lib/utils/file";
 import {ImagePreview} from "@/components/ui/image-preview";
 import MobileBottomSheet from "@/components/ui/mobile-bottom-sheet";
 import AttachmentPicker from "./AttachmentPicker";
+import {createPortal} from "react-dom";
 
 interface DesignParamsBarProps {
     settings: DesignSettings;
