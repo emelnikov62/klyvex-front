@@ -549,7 +549,7 @@ const WorkspacePanel = ({
                                 <div className="p-1.5">
                                     {models.map((model) => {
                                         const Icon = getModelIcon(model.icon);
-                                        const isActive = model.id === selectedModel.id;
+                                        const isActive = model.id === selectedModel?.id;
                                         return (
                                             <button key={model.id} onClick={(e) => {
                                                 e.stopPropagation();
@@ -575,11 +575,11 @@ const WorkspacePanel = ({
                             </MobileBottomSheet>
                         </div>
                         {isDesignTab &&
-                            <DesignParamsBar settings={designSettings} onSettingsChange={onDesignSettingsChange} modelName={selectedModel.name}
-                                             modelId={selectedModel.key} isMobile uploadedFiles={uploadedFiles} onAddUploadedFile={onAddUploadedFile}
+                            <DesignParamsBar settings={designSettings} onSettingsChange={onDesignSettingsChange} modelName={selectedModel?.name}
+                                             modelId={selectedModel?.key} isMobile uploadedFiles={uploadedFiles} onAddUploadedFile={onAddUploadedFile}
                                              generatedFiles={generatedFiles}/>}
                         {isVideoTab &&
-                            <VideoParamsBar settings={videoSettings} onSettingsChange={onVideoSettingsChange} modelId={selectedModel.key} isMobile
+                            <VideoParamsBar settings={videoSettings} onSettingsChange={onVideoSettingsChange} modelId={selectedModel?.key} isMobile
                                             uploadedFiles={uploadedFiles} onAddUploadedFile={onAddUploadedFile} generatedFiles={generatedFiles}/>}
                         {isAudioTab && <AudioParamsBar settings={audioSettings} onSettingsChange={onAudioSettingsChange} isMobile/>}
                     </div>
@@ -1083,7 +1083,7 @@ const WorkspacePanel = ({
                                 <div className="p-1.5">
                                     {models.map((model) => {
                                         const Icon = getModelIcon(model.icon);
-                                        const isActive = model.id === selectedModel.id;
+                                        const isActive = model.id === selectedModel?.id;
                                         return (
                                             <button key={model.id} onClick={() => {
                                                 onModelSelect(model);
@@ -1109,10 +1109,10 @@ const WorkspacePanel = ({
                         )}
                     </div>
                     {isDesignTab &&
-                        <DesignParamsBar settings={designSettings} onSettingsChange={onDesignSettingsChange} modelName={selectedModel.name}
-                                         modelId={selectedModel.key} uploadedFiles={uploadedFiles} onAddUploadedFile={onAddUploadedFile}
+                        <DesignParamsBar settings={designSettings} onSettingsChange={onDesignSettingsChange} modelName={selectedModel?.name}
+                                         modelId={selectedModel?.key} uploadedFiles={uploadedFiles} onAddUploadedFile={onAddUploadedFile}
                                          generatedFiles={generatedFiles}/>}
-                    {isVideoTab && <VideoParamsBar settings={videoSettings} onSettingsChange={onVideoSettingsChange} modelId={selectedModel.key}
+                    {isVideoTab && <VideoParamsBar settings={videoSettings} onSettingsChange={onVideoSettingsChange} modelId={selectedModel?.key}
                                                    uploadedFiles={uploadedFiles} onAddUploadedFile={onAddUploadedFile}
                                                    generatedFiles={generatedFiles}/>}
                     {isAudioTab && <AudioParamsBar settings={audioSettings} onSettingsChange={onAudioSettingsChange}/>}

@@ -168,6 +168,7 @@ const Tariffs = () => {
 
                 {/* Clover slider */}
                 <CloverSlider onTopUp={(amount, total) => {
+                    if (!user) return;
                     messageService.send(
                         dispatch,
                         {
@@ -178,8 +179,8 @@ const Tariffs = () => {
                                 type: CONFIG.TYPES.MAIN.PAY.name,
                                 pay: {
                                     method: CONFIG.TYPES.MAIN.PAY.METHODS.CREATE.name,
-                                    amount: amount,
-                                    description: `Покупка клеверов на сумму: ${amount} ₽`
+                                    amount: total,
+                                    description: `Покупка клеверов на сумму: ${total} ₽`
                                 },
                                 user: {id: user.id}
                             },
@@ -189,13 +190,14 @@ const Tariffs = () => {
                                     toast.warning(response.error.message, {position: 'top-right'});
                                 } else {
                                     if (response.success) {
-                                        const width = 860;
+                                        /*const width = 860;
                                         const height = 500;
                                         const left = (screen.width / 2) - (width / 2);
                                         const top = (screen.height / 2) - (height / 2);
                                         const windowOptions = `menubar=no,location=no,resizable=no,scrollbars=no,status=no, width=${width}, height=${height}, top=${top}, left=${left}`;
                                         const type = 'auth';
-                                        window.open(response.pay.paymentUrl, type, windowOptions);
+                                        window.open(response.pay.paymentUrl, type, windowOptions);*/
+                                        location.href = response.pay.paymentUrl;
                                     }
                                 }
                             }

@@ -36,7 +36,7 @@ const actionBtnClass =
 const ChatMessageItem = ({message, onDelete, onRegenerate, regenerateAttachments, onEdit, prevUserContent, prevUserDesignSettings, prevUserModelId, prevUserVideoSettings, prevUserAudioSettings}: ChatMessageItemProps) => {
     const isUser = message.role === "user";
     const {listModels} = useAuth();
-    const model: AiModel = message.modelId ? listModels.find((m) => m.key.toLowerCase() === message.modelId.toLowerCase()) : null;
+    const model: AiModel = message.modelId ? listModels?.find((m) => m.key.toLowerCase() === message.modelId.toLowerCase()) : null;
     const ModelIcon = getModelIcon(model?.icon);
     const [previewAttachment, setPreviewAttachment] = useState<AttachedFile | null>(null);
     const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);

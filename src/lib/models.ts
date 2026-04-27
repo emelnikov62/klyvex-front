@@ -23,7 +23,7 @@ export function getDefaultModel(tab: TabType, models: AiModel[]): AiModel {
 
 export function getModelIcon(icon: string) {
   if (!icon) {
-    return null;
+    return Sparkles;
   }
 
   switch (icon) {

@@ -29,7 +29,7 @@ const DesignParamsBar = ({settings, onSettingsChange, modelName, modelId, isMobi
     const styleInputRef = useRef<HTMLInputElement>(null);
     const charInputRef = useRef<HTMLInputElement>(null);
 
-    const isMidjourney = modelId.toLowerCase() === "midjourney";
+    const isMidjourney = modelId?.toLowerCase() === "midjourney";
 
     const toggle = useCallback((key: PopupKey) => {
         setOpenPopup((prev) => (prev === key ? null : key));

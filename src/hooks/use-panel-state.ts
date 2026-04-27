@@ -853,6 +853,7 @@ export function usePanelState(initialTab: TabType = "text", sharedFiles?: Shared
     }, [activeChatId, updateProjectMessages]);
 
     const sendMessage = useCallback(() => {
+        if (!selectedModel) return;
         if (!prompt.trim() && attachments.length === 0) return;
 
         let currentChatId = activeChatId;
@@ -978,6 +979,7 @@ export function usePanelState(initialTab: TabType = "text", sharedFiles?: Shared
 
     // Design: generate images
     const generateImages = useCallback((promptText?: string, regenerateAttachments?: AttachedFile[]) => {
+        if (!selectedModel) return;
         const text = promptText || prompt;
         const attachmentsToUse = regenerateAttachments || attachments;
         if (!text.trim()) return;
@@ -1028,7 +1030,7 @@ export function usePanelState(initialTab: TabType = "text", sharedFiles?: Shared
             })
         } as AiRequestParams;
 
-        if (selectedModel.key.toLowerCase() == 'midjourney') {
+        if (selectedModel?.key.toLowerCase() == 'midjourney') {
             // Build template from styleRef
             let template: { url?: string; buffer?: string; name: string } | null = null;
             if (designSettings.styleRefs.length > 0) {
@@ -1177,6 +1179,7 @@ export function usePanelState(initialTab: TabType = "text", sharedFiles?: Shared
 
     // Video: generate video
     const generateVideo = useCallback((promptText?: string) => {
+        if (!selectedModel) return;
         const text = promptText || prompt;
         if (!text.trim()) return;
 
@@ -1379,6 +1382,7 @@ export function usePanelState(initialTab: TabType = "text", sharedFiles?: Shared
     const [audioSettings, setAudioSettings] = useState<AudioSettings>(DEFAULT_AUDIO_SETTINGS);
 
     const generateAudio = useCallback((promptText?: string, regenerateAttachments?: AttachedFile[]) => {
+        if (!selectedModel) return;
         const text = promptText || prompt;
         const attachmentsToUse = regenerateAttachments || attachments;
         if (!text.trim()) return;
